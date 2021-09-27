@@ -24,7 +24,7 @@ run() {
         esac
     done
 
- log INFO "DRY RUN? $dry_run" "$output"
+    log INFO "DRY RUN? $dry_run" "$output"
 
     install-dialog
     dialog-are-you-sure
