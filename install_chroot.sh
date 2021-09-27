@@ -15,13 +15,13 @@ run() {
     dry_run=$(cat /var_dry_run)
 
     log INFO "INSTALL DIALOG" "$output"
-    install-dialog
+    install_dialog
 
     log INFO "INSTALL GRUB ON $hd WITH UEFI $uefi" "$output"
-    install-grub "$hd" "$uefi"
+    install_grub "$hd" "$uefi"
 
     log INFO "SET HARDWARE CLOCK" "$output"
-    set-hardware-clock
+    set_hardware_clock
 
     log INFO "SET TIMEZONE" "$output"
     timedatectl set-timezone "Europe/Berlin"
@@ -30,7 +30,7 @@ run() {
     write-hostname "$hostname"
 
     log INFO "CONFIGURE LOCALE" "$output"
-    configure-locale "en_US.UTF-8" "UTF-8"
+    configure_locale "en_US.UTF-8" "UTF-8"
 
     log INFO "ADD ROOT" "$output"
     dialog --title "root password" --msgbox "It's time to add a password for the root user" 10 60
@@ -41,7 +41,7 @@ run() {
 
     config_user
 
-    continue-install "$url_installer"
+    continue_install "$url_installer"
 }
 
 log() {
@@ -53,16 +53,16 @@ log() {
     echo -e "${timestamp} [${level}] ${message}" >>"$output"
 }
 
-write-hostname() {
+write_hostname() {
     local -r hostname=${1:?}
     echo "$hostname" > /etc/hostname
 }
 
-install-dialog() {
+install_dialog() {
     pacman --noconfirm --needed -S dialog
 }
 
-install-grub() {
+install_grub() {
     local -r hd=${1:?}
     local -r uefi=${2:?}
 
@@ -78,16 +78,16 @@ install-grub() {
     grub-mkconfig -o /boot/grub/grub.cfg
 }
 
-set-timezone() {
+set_timezone() {
     local -r tz=${1:?}
     timedatectl set-timezone "$tz"
 }
 
-set-hardware-clock() {
+set_hardware_clock() {
     hwclock --systohc
 }
 
-configure-locale() {
+configure_locale() {
     local -r locale=${1:?}
     local -r encoding=${2:?}
 
@@ -129,7 +129,7 @@ config_user() {
     echo "$name" > /tmp/var_user_name
 }
 
-continue-install() {
+continue_install() {
     local -r url_installer=${1:?}
 
     dialog --title "Continue installation" --yesno "Do you want to install all the softwares and the dotfiles?" 10 60 \

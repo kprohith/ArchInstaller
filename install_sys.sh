@@ -26,43 +26,43 @@ run() {
 
     log INFO "DRY RUN? $dry_run" "$output"
 
-    install-dialog
-    dialog-are-you-sure
+    install_dialog
+    dialog_are_you_sure
 
     local hostname
-    dialog-name-of-computer hn
+    dialog_name_of_computer hn
     hostname=$(cat hn) && rm hn
     log INFO "HOSTNAME: $hostname" "$output"
 
     local disk
-    dialog-what-disk-to-use hd
+    dialog_what_disk_to_use hd
     disk=$(cat hd) && rm hd
     log INFO "DISK CHOSEN: $disk" "$output"
 
     local swap_size
-    dialog-what-swap-size swaps
+    dialog_what_swap_size swaps
     swap_size=$(cat swaps) && rm swaps
     log INFO "SWAP SIZE: $swap_size" "$output"
 
     log INFO "SET TIME" "$output"
-    set-timedate
+    set_timedate
 
     local wiper
-    dialog-how-wipe-disk "$disk" dfile
+    dialog_how_wipe_disk "$disk" dfile
     wiper=$(cat dfile) && rm dfile
     log INFO "WIPER CHOICE: $wiper" "$output"
 
     [[ "$dry_run" = false ]] \
         && log INFO "ERASE DISK" "$output" \
-        && erase-disk "$wiper" "$disk"
+        && erase_disk "$wiper" "$disk"
 
     [[ "$dry_run" = false ]] \
         && log INFO "CREATE PARTITIONS" "$output" \
-        && fdisk-partition "$disk" "$(boot-partition "$(is-uefi)")" "$swap_size"
+        && fdisk_partition "$disk" "$(boot_partition "$(is-uefi)")" "$swap_size"
 
     [[ "$dry_run" = false ]] \
         && log INFO "FORMAT PARTITIONS" "$output" \
-        && format-partitions "$disk" "$(is-uefi)"
+        && format_partitions "$disk" "$(is-uefi)"
 
     log INFO "CREATE VAR FILES" "$output"
     echo "$(is-uefi)" > /mnt/var_uefi
@@ -74,14 +74,14 @@ run() {
 
     [[ "$dry_run" = false ]] \
         && log INFO "BEGIN INSTALL ARCH LINUX" "$output" \
-        && install-arch-linux
+        && install_arch_linux
 
     [[ "$dry_run" = false ]] \
         && log INFO "BEGIN CHROOT SCRIPT" "$output" \
-        && install-chroot "$(getUrl)"
+        && install_chroot "$(getUrl)"
 
     clean
-    end-of-install
+    end_of_install
 }
 
 log() {
@@ -93,7 +93,7 @@ log() {
     echo -e "${timestamp} [${level}] ${message}" >>"$output"
 }
 
-install-dialog() {
+install_dialog() {
     pacman -Sy
     pacman --noconfirm -S dialog
 }
@@ -107,7 +107,7 @@ dialog-are-you-sure() {
         Are you sure?"  15 60 || exit
 }
 
-dialog-name-of-computer() {
+dialog_name_of_computer() {
     local file=${1:?}
     dialog --no-cancel --inputbox "Enter a name for your computer." 10 60 2> "$file"
 }
@@ -119,7 +119,7 @@ is-uefi() {
     echo "$uefi"
 }
 
-dialog-what-disk-to-use() {
+dialog_what_disk_to_use() {
     local file=${1:?}
 
     devices_list=($(lsblk -d | awk '{print "/dev/" $1 " " $4 " on"}' | grep -E 'sd|hd|vd|nvme|mmcblk'))
@@ -129,7 +129,7 @@ dialog-what-disk-to-use() {
         WARNING: Everything will be DESTROYED on the hard disk!" 15 60 4 "${devices_list[@]}" 2> "$file"
 }
 
-dialog-what-swap-size() {
+dialog_what_swap_size() {
     local default_size="8"
     local file=${1:?}
     dialog --no-cancel --inputbox "You need four partitions: Boot, Root and Swap \n\
@@ -145,11 +145,11 @@ dialog-what-swap-size() {
     echo "$size" > "$file"
 }
 
-set-timedate() {
+set_timedate() {
     timedatectl set-ntp true
 }
 
-dialog-how-wipe-disk() {
+dialog_how_wipe_disk() {
     local -r hd=${1:?}
     local -r file=${2:?}
 
@@ -161,7 +161,7 @@ dialog-how-wipe-disk() {
         3 "No need - my hard disk is empty" 2> "$file"
 }
 
-erase-disk() {
+erase_disk() {
     local -r choice=${1:?}
     local -r hd=${2:?}
 
@@ -174,7 +174,7 @@ erase-disk() {
     set -e
 }
 
-boot-partition() {
+boot_partition() {
     local -r uefi=${1:?}
     local boot_partition_type=1
     [[ "$uefi" == 0 ]] && local boot_partition_type=4
@@ -182,7 +182,7 @@ boot-partition() {
     echo "$boot_partition_type"
 }
 
-fdisk-partition() {
+fdisk_partition() {
 local -r hd=${1:?}
 local -r boot_partition_type=${2:?}
 local -r swap_size=${3:?}
@@ -207,7 +207,7 @@ w
 EOF
 }
 
-format-partitions() {
+format_partitions() {
     local -r hd=${1:?}
     local -r uefi=${2:?}
 
@@ -224,12 +224,12 @@ format-partitions() {
 }
 
 
-install-arch-linux() {
+install_arch_linux() {
     pacstrap /mnt base base-devel linux linux-firmware
     genfstab -U /mnt >> /mnt/etc/fstab
 }
 
-install-chroot() {
+install_chroot() {
     local -r installer_url=${1:?}
 
     curl "$installer_url/install_chroot.sh" > /mnt/install_chroot.sh
@@ -244,7 +244,7 @@ clean() {
     rm /mnt/var_dry_run
 }
 
-end-of-install() {
+end_of_install() {
     dialog --title "Reboot time" \
         --yesno "Congrats! The install is done! \n\nTo run the new graphical environment, you need to restart your computer. \n\nDo you want to restart now?" 20 60
 
