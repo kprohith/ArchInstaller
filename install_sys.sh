@@ -58,14 +58,14 @@ run() {
 
     [[ "$dry_run" = false ]] \
         && log INFO "CREATE PARTITIONS" "$output" \
-        && fdisk_partition "$disk" "$(boot_partition "$(is-uefi)")" "$swap_size"
+        && fdisk_partition "$disk" "$(boot_partition "$(is_uefi)")" "$swap_size"
 
     [[ "$dry_run" = false ]] \
         && log INFO "FORMAT PARTITIONS" "$output" \
-        && format_partitions "$disk" "$(is-uefi)"
+        && format_partitions "$disk" "$(is_uefi)"
 
     log INFO "CREATE VAR FILES" "$output"
-    echo "$(is-uefi)" > /mnt/var_uefi
+    echo "$(is_uefi)" > /mnt/var_uefi
     echo "$disk" > /mnt/var_disk
     echo "$hostname" > /mnt/var_hostname
     echo "$output" > /mnt/var_output
@@ -112,7 +112,7 @@ dialog_name_of_computer() {
     dialog --no-cancel --inputbox "Enter a name for your computer." 10 60 2> "$file"
 }
 
-is-uefi() {
+is_uefi() {
     local uefi=0
     ls /sys/firmware/efi/efivars &> /dev/null && uefi=1
 
