@@ -90,14 +90,14 @@ aur_check() {
 }
 
 install_dotfiles() {
-    DOTFILES="/home/$(whoami)/.dotfiles"
+    DOTFILES="/home/$(whoami)/dotfiles"
     if [ ! -d "$DOTFILES" ];
         then
-            dialog --infobox "[$(whoami)] Downloading .dotfiles..." 10 60
+            dialog --infobox "[$(whoami)] Downloading dotfiles..." 10 60
             git clone --recurse-submodules "https://github.com/kprohith/dotfiles" "$DOTFILES" >/dev/null
     fi
 
-    source "/home/$(whoami)/.dotfiles/zsh/zshenv"
+    source "/home/$(whoami)/dotfiles/zsh/zshenv"
     cd "$DOTFILES"
     command -v "zsh" >/dev/null && zsh ./install.sh -y
 }
