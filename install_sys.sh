@@ -6,7 +6,7 @@
 set -euo pipefail
 
 # YOU NEED TO MODIFY YOUR INSTALL URL
-url-installer() {
+getUrl() {
     echo "https://raw.githubusercontent.com/kprohith/ArchInstaller/main"
 }
 
@@ -70,7 +70,7 @@ run() {
     echo "$hostname" > /mnt/var_hostname
     echo "$output" > /mnt/var_output
     echo "$dry_run" > /mnt/var_dry_run
-    url-installer > /mnt/var_url_installer
+    getUrl > /mnt/var_url_installer
 
     [[ "$dry_run" = false ]] \
         && log INFO "BEGIN INSTALL ARCH LINUX" "$output" \
@@ -78,7 +78,7 @@ run() {
 
     [[ "$dry_run" = false ]] \
         && log INFO "BEGIN CHROOT SCRIPT" "$output" \
-        && install-chroot "$(url-installer)"
+        && install-chroot "$(getUrl)"
 
     clean
     end-of-install
