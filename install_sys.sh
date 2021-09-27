@@ -98,7 +98,7 @@ install_dialog() {
     pacman --noconfirm -S dialog
 }
 
-dialog-are-you-sure() {
+dialog_are_you_sure() {
     dialog --defaultno \
         --title "Are you sure?" \
         --yesno "This is my personnal arch linux install. \n\n\
